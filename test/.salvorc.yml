@@ -21,8 +21,5 @@ commands-options:
         cwd: 'test'
         env:
             DEBUG: thing
-write:
-    test:
-        scripts/*.js: ../out
 summary: true
 default: [test]

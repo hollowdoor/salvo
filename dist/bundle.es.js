@@ -13,6 +13,8 @@ import glob from 'glob-promise';
 import 'minimatch';
 import commandExists from 'command-exists';
 import { fork, spawn } from 'child_process';
+import through2 from 'through2';
+import { createWriteStream } from 'fs';
 import StreamQueue from 'streamqueue';
 import tapMerge from 'tap-merge';
 import stream from 'stream';
@@ -98,7 +100,7 @@ const srx$1 = /\s+/;
 function parseCommand(command, commandOptions, write){
     let [cmd, ...args] = command.split(srx$1);
 
-    
+
 
     if(isGlob(cmd)){
 
@@ -107,7 +109,7 @@ function parseCommand(command, commandOptions, write){
             return files.map(file=>{
                 return {
                     command: file,
-                    args: args,
+                    args,
                     type: 'fork',
                     options: commandOptions
                 };
@@ -118,14 +120,14 @@ function parseCommand(command, commandOptions, write){
         .then(()=>{
             return [{
                 command: cmd,
-                args: args,
+                args,
                 type: 'spawn',
                 options: commandOptions
             }];
         }, ()=>{
             return [{
                 command: cmd,
-                args: args,
+                args,
                 type: 'fork',
                 options: commandOptions
             }];
@@ -217,18 +219,18 @@ function getCommandExecutor(output){
 
 const cpu_count = (os.cpus().length || 1);
 const dir = process.cwd();
-function runParrallel(_commands, {
-    output = {},
-    limit = cpu_count,
-    dirs = [],
-    write = {}
-} = {}, commandOptions){
+function runParrallel(_commands, options, commandOptions){
+
+    const {
+        output = {},
+        limit = cpu_count
+    } = options;
 
     const commands = [];
+    //const internalOutput = getOutputStream(options);
+    //internalOutput.pipe(output);
     const execCommand = getCommandExecutor(output);
     let pending = 0;
-
-    //console.log('write ',write)
 
     return new Promise((resolve, reject)=>{
 
@@ -281,7 +283,7 @@ function runParrallel(_commands, {
                 return;
             }
 
-            parseCommand(_commands.shift())
+            parseCommand(_commands.shift(), commandOptions)
             .then(cmds=>{
                 [].push.apply(commands, cmds);
                 next();

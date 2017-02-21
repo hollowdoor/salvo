@@ -5,18 +5,18 @@ const cpu_count = (os.cpus().length || 1);
 const dir = process.cwd();
 const srx = /\s+/;
 
-export default function runParrallel(_commands, {
-    output = {},
-    limit = cpu_count,
-    dirs = [],
-    write = {}
-} = {}, commandOptions){
+export default function runParrallel(_commands, options, commandOptions){
+
+    const {
+        output = {},
+        limit = cpu_count
+    } = options;
 
     const commands = [];
+    //const internalOutput = getOutputStream(options);
+    //internalOutput.pipe(output);
     const execCommand = getCommandExec(output);
     let pending = 0;
-
-    //console.log('write ',write)
 
     return new Promise((resolve, reject)=>{
 
@@ -69,7 +69,7 @@ export default function runParrallel(_commands, {
                 return;
             }
 
-            parseCommand(_commands.shift())
+            parseCommand(_commands.shift(), commandOptions)
             .then(cmds=>{
                 [].push.apply(commands, cmds);
                 next();

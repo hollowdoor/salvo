@@ -7,7 +7,7 @@ const srx = /\s+/;
 export default function parseCommand(command, commandOptions, write){
     let [cmd, ...args] = command.split(srx);
 
-    
+
 
     if(isGlob(cmd)){
 
@@ -16,7 +16,7 @@ export default function parseCommand(command, commandOptions, write){
             return files.map(file=>{
                 return {
                     command: file,
-                    args: args,
+                    args,
                     type: 'fork',
                     options: commandOptions
                 };
@@ -27,14 +27,14 @@ export default function parseCommand(command, commandOptions, write){
         .then(()=>{
             return [{
                 command: cmd,
-                args: args,
+                args,
                 type: 'spawn',
                 options: commandOptions
             }];
         }, ()=>{
             return [{
                 command: cmd,
-                args: args,
+                args,
                 type: 'fork',
                 options: commandOptions
             }];
