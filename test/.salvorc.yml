@@ -1,0 +1,28 @@
+commands:
+    test1:
+        - scripts/*.js
+        - taps/*.js
+    test-tap:
+        - taps/*.js
+    file:
+        - scripts/script1.js -a=a
+    file2:
+        - scripts/script2.js
+commands-series:
+    test: [test1, ls]
+    test2:
+        - ls
+        - firefox yahoo.com google.com
+        - gedit scripts/script1.js scripts/script2.js
+        - test1
+        - inkscape
+commands-options:
+    test-tap:
+        cwd: 'test'
+        env:
+            DEBUG: thing
+write:
+    test:
+        scripts/*.js: ../out
+summary: true
+default: [test]

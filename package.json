@@ -1,0 +1,60 @@
+{
+  "name": "salvo",
+  "version": "1.0.0",
+  "description": "The script run machine",
+  "main": "dist/bundle.js",
+  "bin": {
+    "salvo": "dist/bundle.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "pretest": "npm run build",
+    "test": "cd test && node ../  file file2 test",
+    "test-tap": "cd test && node ../  file file2 test -e | ../node_modules/.bin/tap-spec",
+    "test-special": "cd test && node ../ test2",
+    "build": "rollup -c"
+  },
+  "keywords": [
+    "run",
+    "test",
+    "script",
+    "prototyping"
+  ],
+  "author": "Quentin Engles <hollowdoor99@gmail.com> (https://hollowdoor.github.io/)",
+  "license": "MIT",
+  "dependencies": {
+    "camelcase": "^4.0.0",
+    "command-exists": "^1.2.1",
+    "cosmiconfig": "^2.1.1",
+    "dateformat": "^2.0.0",
+    "debug": "^2.6.1",
+    "executable": "^4.1.0",
+    "glob": "^7.1.1",
+    "glob-promise": "^3.1.0",
+    "is-glob": "^3.1.0",
+    "meow": "^3.7.0",
+    "minimatch": "^3.0.3",
+    "mkdirp-promise": "^5.0.1",
+    "mz": "^2.6.0",
+    "os-homedir": "^1.0.2",
+    "redent": "^2.0.0",
+    "resolve-cwd": "^1.0.0",
+    "streamqueue": "^1.1.1",
+    "tap-merge": "^0.3.1",
+    "through2": "^2.0.3"
+  },
+  "devDependencies": {
+    "speed-test": "^1.7.1",
+    "tape": "^4.6.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hollowdoor/salvo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hollowdoor/salvo/issues"
+  },
+  "homepage": "https://github.com/hollowdoor/salvo#readme"
+}
