@@ -1,74 +1,56 @@
 import StreamQueue from 'streamqueue';
-import tapMerge from 'tap-merge';
+import through2 from 'through2';
 import stringStream from './string_stream.js';
 import debugLog from 'debug';
-const debug = debugLog('getio');
+const debug = debugLog('stream');
 
-export default function getOutputStream({
-    expectTap = false,
-    quietLevel = 0,
-    output = {}
-} = {}){
+export default function getThroughStream(){
 
     let complete = false;
-    let stdout = new StreamQueue({
-        pauseFlowingStream: true,
-        resumeFlowingStream: true
-    });
-    let stderr = new StreamQueue({
+    let stream = new StreamQueue({
         pauseFlowingStream: true,
         resumeFlowingStream: true
     });
 
-    let out = stdout;
-
-    if(expectTap){
-        out = out.pipe(tapMerge())
-    }
-
-    /*if(history.useHistory){
-        out = out.pipe(createSave(config.filename));
-    }
-
-    if(config.out && config.out !== ''){
-        try{
-            out = out.pipe(createSave(config.save));
-        }catch(e){
-            return Promise.reject(
-                new Error(`Can't save with "${config.save}" ${e}`)
-            );
+    const streamTypes = {
+        _string(s){
+            stream.queue(stringStream(s));
+        },
+        _function(fn){
+            stream.queue(through2(fn));
+        },
+        _number(s){
+            this._string(s);
+        },
+        _object(s){
+            if(typeof s['pipe'] === 'function'){
+                stream.queue(s);
+            }else{
+                this._string(s);
+            }
         }
-    }*/
-
-    function setOutput(sendTo){
-        output = sendTo;
-        out.pipe(sentTo.stdout);
-        if(out['stderr']){
-            stderr.pipe(sendTo.stderr);
-        }
-    }
+    };
 
     return {
-        stdout,
-        stderr,
-        setOutput,
-        add(child){
-            if(typeof child === 'string'){
-                stdout.queue(stringStream(child));
-                return this;
-            }
-            stdout.queue(child.stdout);
-            stderr.queue(child.stderr);
+        pipe(pipeTo){
+            output = pipeTo;
+            return stream.pipe(pipeTo);
+        },
+        add(...streams){
+            streams.forEach(s=>{
+                let type = '_' + (typeof s);
+                streamTypes[type](s);
+            });
+
             return this;
         },
         end(message){
             if(complete){ return this; }
             complete = true;
             if(typeof message !== 'undefined'){
-                this.add(message);
+                this.add(message + '');
             }
-            stdout.done();
-            stderr.done();
+            outStream.done();
             return this;
         }
     };
